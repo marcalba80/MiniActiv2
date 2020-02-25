@@ -18,6 +18,7 @@ package com.google.android.gms.location.sample.locationupdates;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
      * Start Updates and Stop Updates buttons.
      */
     private Boolean mRequestingLocationUpdates;
+    private boolean isRequestRequired;
 
     /**
      * Time when the location was updated represented as a String.
@@ -177,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
         mRequestingLocationUpdates = false;
+        isRequestRequired = true;
         mLastUpdateTime = "";
 
         // Update values using data stored in the Bundle.
@@ -280,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
@@ -436,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
         // location updates if the user has requested them.
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
-        } else if (!checkPermissions()) {
+        } else if (!checkPermissions() && isRequestRequired) {
             requestPermissions();
         }
 
@@ -494,17 +498,17 @@ public class MainActivity extends AppCompatActivity {
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
-            showSnackbar(R.string.permission_rationale,
-                    android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Request permission
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_PERMISSIONS_REQUEST_CODE);
-                        }
-                    });
+
+                Log.i(TAG, "Displaying permission rationale to provide additional context.");
+                showSnackbar(R.string.permission_rationale, android.R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                REQUEST_PERMISSIONS_REQUEST_CODE);
+                    }
+                });
+
         } else {
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
@@ -545,21 +549,23 @@ public class MainActivity extends AppCompatActivity {
                 // again" prompts). Therefore, a user interface affordance is typically implemented
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
-                showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
+                boolean showRequestRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (!showRequestRationale){
+                    showSnackbar(R.string.permission_denied_explanation,
+                            R.string.settings, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // Build intent that displays the App settings screen.
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivityForResult(intent, REQUEST_CHECK_SETTINGS);
+                        }
+                    });
+
+                    isRequestRequired = false;
+                }
             }
         }
     }

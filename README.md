@@ -1,53 +1,18 @@
-Google Play Location Samples
+MiniActiv2
 ============================
 
-Samples that use
-[Location APIs](http://developer.android.com/google/play-services/location.html)
-to help you make your applications location aware.
+1.Intentar compactar el codi, és a dir, evitar, si és possible, repetir codi en les diverses
+  parts de l’app i encapsular en mètodes tot allò que s’utilitzi en més d’una ocasió.
 
-This repo contains the following samples:
+  El codi contenia errors alhora de mostrar el snackbar de settings, un cop es denegaven els permisos, seleccionant que no es tornes a mostrar el missatge.
+  Es produïa un bucle infinit, que llançava el snackbar de settings constantment, fet que deixava l'aplicació inutilitzada. A més aquest snackbar
+  es llançava sempre independentment del tipus de denegació del permís que es selecciones.
 
-1. Basic Location Sample
- ([Java](https://github.com/googlesamples/android-play-location/tree/master/BasicLocationSample/java), [Kotlin](https://github.com/googlesamples/android-play-location/tree/master/BasicLocationSample/kotlin)):
-Retrieve the last known location for a device.
-1. [Location Updates](https://github.com/googlesamples/android-play-location/tree/master/LocationUpdates):
-Get updates about a device's location.
+  Un cop fetes aquestes correccions podem observar com el comportament de l'aplicació resultant, es coherent, s'ajusta als requirements i
+  bones pràctiques dels permissos d'Android.
 
-1. [Location Updates using a PendingIntent](https://github.com/googlesamples/android-play-location/tree/master/LocationUpdatesPendingIntent):
-Get updates about a device's location using a `PendingIntent`. Sample shows
-implementation using an `IntentService` as well as a `BroadcastReceiver`.
-1. [Location Updates using a Foreground Service](https://github.com/googlesamples/android-play-location/tree/master/LocationUpdatesForegroundService):
-Get updates about a device's location using a bound and started foreground
-service.
-1. Location Address
-([Java](https://github.com/googlesamples/android-play-location/tree/master/LocationAddress/java), [Kotlin](https://github.com/googlesamples/android-play-location/tree/master/LocationAddress/kotlin)):
-Use the [Geocode API](http://developer.android.com/reference/android/location/Geocoder.html) to display a device's location as an address.
-1. [Creating and Monitoring Geofences](https://github.com/googlesamples/android-play-location/tree/master/Geofencing):
-Create geofences and process enter and exit transitions.
-1. [Recognizing the User's Current Activity](https://github.com/googlesamples/android-play-location/tree/master/ActivityRecognition):
-Use the
-[ActivityRecognitionApi](https://developer.android.com/reference/com/google/android/gms/location/ActivityRecognitionApi.html) to determine the user's current activity.
+2.Explicar què fa el darrer mètode de MainActivity: onRequestPermissionsResult(...)
 
-Prerequisites
---------------
-
-- Android API Level >v9
-- Android Build Tools >v21
-- Google Support Repository
-
-Getting Started
----------------
-
-These samples use the Gradle build system. To build a sample, use the
-"gradlew build" command or use "Import Project" in Android Studio.
-
-Support
--------
-
-- Stack Overflow: http://stackoverflow.com/questions/tagged/google-play-services
-
-If you've found an error in these samples, please file an issue:
-https://github.com/android/location-samples/issues
-
-Patches are encouraged, and may be submitted according to the instructions in
-CONTRIBUTING.md.
+  Aquest mètode recull les accions que s'hauran de dur a terme, un cop s'ha cridat a demanar els permissos necessaris pel bon funcionament de l'aplicació,
+  es llança automàticament un cop l'usuari a seleccionat alguna de les opcions disponibles sobre el permís demanat. En el nostre cas, gestionem quan l'usuari
+  concedeix el permís i quan el denega permamentment.
