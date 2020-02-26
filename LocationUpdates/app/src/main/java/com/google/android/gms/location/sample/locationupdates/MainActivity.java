@@ -503,9 +503,10 @@ public class MainActivity extends AppCompatActivity {
                 showSnackbar(R.string.permission_rationale, android.R.string.ok, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ActivityCompat.requestPermissions(MainActivity.this,
+                        /*ActivityCompat.requestPermissions(MainActivity.this,
                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                REQUEST_PERMISSIONS_REQUEST_CODE);
+                                REQUEST_PERMISSIONS_REQUEST_CODE);*/
+                        requestLocationActivity();
                     }
                 });
 
@@ -514,10 +515,20 @@ public class MainActivity extends AppCompatActivity {
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(MainActivity.this,
+            /*ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                    REQUEST_PERMISSIONS_REQUEST_CODE);*/
+            requestLocationActivity();
         }
+    }
+
+    /**
+     * Activity call
+     */
+    private void requestLocationActivity(){
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_PERMISSIONS_REQUEST_CODE);
     }
 
     /**
