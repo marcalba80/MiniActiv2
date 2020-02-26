@@ -18,33 +18,36 @@ MiniActiv2
   concedeix el permís i quan el denega permamentment.
 
   El metode callback onRequestPermissionsResult() serveix per gestionar les respostes a la solicitud de permisos, en aquest cas de localització, que s’ofereix a l’usuari.
-
+```java
   // Revisa que sigui la resposta a una petició de permisos
   if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
      // Comprova que s’ha interactuat amb el cuadre de dialeg.
      if (grantResults.length <= 0) {
       // Es verifica que s’ha garantit el permis necesari
       } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-         // Si es desitja enviar les actualitzacions, s’inicia l’enviament de les mateixes.
          if (mRequestingLocationUpdates) {
              startLocationUpdates();
           }
       // Si s’han denegat els permisos
       } else {
-          // Es mostra que són imprecindibles
-         showSnackbar(R.string.permission_denied_explanation,
-                  R.string.settings, new View.OnClickListener() {
-                      @Override
-                      public void onClick(View view) {
-                      // S’obra la configuració del dispositiu per poder concedir els permisos requerits.
-                          Intent intent = new Intent();
-                          intent.setAction(
-                                  Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                          Uri uri = Uri.fromParts("package",
-                                  BuildConfig.APPLICATION_ID, null);
-                          intent.setData(uri);
-                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                          startActivity(intent);
-                      }
-                  });
+          // Es mostra que són imprecindibles, es dirigeix a settings
+         boolean showRequestRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+            if (!showRequestRationale){
+                showSnackbar(R.string.permission_denied_explanation,
+                        R.string.settings, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Build intent that displays the App settings screen.
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, REQUEST_CHECK_SETTINGS);
+                    }
+                });
+
+                isRequestRequired = false;
+            }
       }
+   }    
+```
